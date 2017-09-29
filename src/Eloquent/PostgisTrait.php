@@ -142,11 +142,6 @@ trait PostgisTrait
         return $this->stComparison($query, $column, $geometry, 'Equals');
     }
 
-    public function scopeSt_difference($query, string $column, GeometryInterface $geometry)
-    {
-        return $this->stComparison($query, $column, $geometry, 'Difference');
-    }
-
     private function stComparison($query, string $column, GeometryInterface $geometry, string $relation)
     {
         $this->throwIfNotSpatial($column);

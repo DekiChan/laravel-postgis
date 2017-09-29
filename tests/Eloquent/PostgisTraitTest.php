@@ -149,16 +149,6 @@ class PostgisTraitTest extends BaseTestCase
         $this->assertNotEmpty($q->wheres);
         $this->assertContains("public.ST_Equals(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
     }
-
-    public function testScopeDifference()
-    {
-        $query = TestModel::st_difference('point', $this->buildTestPolygon());
-
-        $this->assertInstanceOf(Builder::class, $query);
-        $q = $query->getQuery();
-        $this->assertNotEmpty($q->wheres);
-        $this->assertContains("public.ST_Difference(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
-    }
 }
 
 class TestModel extends Model
