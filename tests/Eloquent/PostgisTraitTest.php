@@ -119,6 +119,46 @@ class PostgisTraitTest extends BaseTestCase
         $this->assertNotEmpty($q->wheres);
         $this->assertContains("public.ST_Intersects(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
     }
+
+    public function testScopeOverlaps()
+    {
+        $query = TestModel::st_overlaps('point', $this->buildTestPolygon());
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $q = $query->getQuery();
+        $this->assertNotEmpty($q->wheres);
+        $this->assertContains("public.ST_Overlaps(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
+    }
+
+    public function testScopeWithin()
+    {
+        $query = TestModel::st_within('point', $this->buildTestPolygon());
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $q = $query->getQuery();
+        $this->assertNotEmpty($q->wheres);
+        $this->assertContains("public.ST_Within(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
+    }
+
+    public function testScopeEquals()
+    {
+        $query = TestModel::st_equals('point', $this->buildTestPolygon());
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $q = $query->getQuery();
+        $this->assertNotEmpty($q->wheres);
+        $this->assertContains("public.ST_Equals(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
+    }
+
+    public function testScopeDifference()
+    {
+        $query = TestModel::st_difference('point', $this->buildTestPolygon());
+
+        $this->assertInstanceOf(Builder::class, $query);
+        $q = $query->getQuery();
+        $this->assertNotEmpty($q->wheres);
+        $this->assertContains("public.ST_Difference(point::geometry, public.ST_GeomFromText('POLYGON((1 1,2 1),(2 1,2 2),(2 2,1 1))', 4326))", $q->wheres[0]['sql']);
+    }
 }
 
 class TestModel extends Model

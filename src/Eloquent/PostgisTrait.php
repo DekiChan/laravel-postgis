@@ -127,6 +127,26 @@ trait PostgisTrait
         return $this->stComparison($query, $column, $geometry, 'Intersects');
     }
 
+    public function scopeSt_overlaps($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Overlaps');
+    }
+
+    public function scopeSt_within($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Within');
+    }
+
+    public function scopeSt_equals($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Equals');
+    }
+
+    public function scopeSt_difference($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Difference');
+    }
+
     private function stComparison($query, string $column, GeometryInterface $geometry, string $relation)
     {
         $this->throwIfNotSpatial($column);
