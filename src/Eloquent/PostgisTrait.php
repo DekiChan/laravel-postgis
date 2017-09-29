@@ -5,6 +5,7 @@ use Illuminate\Support\Arr;
 use Phaza\LaravelPostgis\Exceptions\PostgisFieldsNotDefinedException;
 use Phaza\LaravelPostgis\Exceptions\PostgisTypesMalformedException;
 use Phaza\LaravelPostgis\Exceptions\UnsupportedGeomtypeException;
+use Phaza\LaravelPostgis\Exceptions\UndefinedPostgisFieldException;
 use Phaza\LaravelPostgis\Geometries\Geometry;
 use Phaza\LaravelPostgis\Geometries\GeometryInterface;
 use Phaza\LaravelPostgis\Schema\Grammars\PostgisGrammar;
@@ -104,6 +105,41 @@ trait PostgisTrait
         } else {
             throw new PostgisFieldsNotDefinedException(__CLASS__ . ' has to define $postgisFields');
         }
+    }
 
+    public function scopeSt_contains($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Contains');
+    }
+
+    public function scopeSt_covers($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Covers');
+    }
+
+    public function scopeSt_crosses($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Crosses');
+    }
+
+    public function scopeSt_intersects($query, string $column, GeometryInterface $geometry)
+    {
+        return $this->stComparison($query, $column, $geometry, 'Intersects');
+    }
+
+    private function stComparison($query, string $column, GeometryInterface $geometry, string $relation)
+    {
+        $this->throwIfNotSpatial($column);
+        
+        $query->whereRaw("public.ST_{$relation}({$column}::geometry, public.ST_GeomFromText('{$geometry->toWKT()}', 4326))");
+
+        return $query;
+    }
+
+    private function throwIfNotSpatial($field)
+    {
+        if (! in_array($field, $this->getPostgisFields())) {
+            throw new UndefinedPostgisFieldException('Field '.$field.' in class '.__CLASS__.' not present in $postgisFields');
+        }
     }
 }
